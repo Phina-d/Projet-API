@@ -6,6 +6,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Modal, Button } from 'react-bootstrap';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import UserList from './UserList';
 import './App.css';
 import Home from './pages/Home';
 import About from './pages/About';
@@ -21,6 +22,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home darkMode={darkMode} setDarkMode={setDarkMode} />} />
             <Route path="/about" element={<About />} />
+            <Route path="/users" element={<UserList />} /> {/* ← Cette ligne utilise UserList */}
           </Routes>
         </div>
 

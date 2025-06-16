@@ -30,10 +30,16 @@ function Navbar({ darkMode }) {
               </NavLink>
             </li>
             <li className="nav-item">
-              <NavLink to="/about" className="nav-link" onClick={() => setExpanded(false)}>
-                <FaInfoCircle className="me-1" /> À propos
-              </NavLink>
-            </li>
+  <NavLink to="/about" className="nav-link" onClick={() => setExpanded(false)}>
+    <FaInfoCircle className="me-1" /> À propos
+  </NavLink>
+</li>
+<li className="nav-item">
+  <NavLink to="/users" className="nav-link" onClick={() => setExpanded(false)}>
+    Utilisateurs
+  </NavLink>
+</li>
+
           </ul>
         </div>
       </div>

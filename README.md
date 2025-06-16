@@ -27,19 +27,33 @@ Une application React permettant d'afficher, rechercher, ajouter et consulter de
 
 ## 📁 Structure du projet
 
-src/
+/mon-projet/
 │
-├── components/
-│ ├── Navbar.js # Barre de navigation
-│ └── Footer.js # Pied de page
+├── /public/
+│    └── index.html           # fichier HTML principal
 │
-├── pages/
-│ ├── Home.js # Page principale avec liste, recherche, formulaire, détails
-│ └── About.js # Page "À propos"
+├── /src/
+│    ├── /components/         # composants réutilisables
+│    │     ├── Navbar.js      # Barre de navigation
+│    │     ├── Navbar.css
+│    │     ├── Footer.js      # Pied de page
+│    │     └── Footer.css
+│    │
+│    ├── /pages/              # pages accessibles via le router
+│    │     ├── Home.js        # Page principale avec liste, recherche, formulaire, détails
+│    │     └── About.js       # Page "À propos"
+│    │
+│    ├── /services/           # appels API (optionnel)
+│    │     └── api.js         # exemple pour axios
+│    │
+│    ├── UserList.js          # composant liste d’utilisateurs
+│    ├── App.js               # composant racine
+│    ├── App.css              # styles globaux
+│    └── index.js             # point d’entrée React
 │
-├── App.js # Routage, gestion du mode sombre
-├── App.css # Styles globaux (mode sombre, cartes, avatars)
-└── index.js # Point d’entrée
+├── package.json
+└── README.md
+
 
 ⚙️ Fonctionnement
 À l’ouverture, l’app récupère les utilisateurs depuis https://jsonplaceholder.typicode.com/users.
