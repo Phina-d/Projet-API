@@ -1,20 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { FaUser } from 'react-icons/fa';
-import { FaLaptopCode } from 'react-icons/fa';
 import { FaMoon, FaSun } from 'react-icons/fa';
 import { Modal, Button } from 'react-bootstrap';
-
-// En haut de ton fichier Home.js
-const getRandomColor = (input) => {
-  const colors = ['#0d6efd', '#6610f2', '#6f42c1', '#d63384', '#fd7e14', '#20c997', '#198754'];
-  let hash = 0;
-  for (let i = 0; i < input.length; i++) {
-    hash = input.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  return colors[Math.abs(hash) % colors.length];
-};
-
+import UserCard from '../components/UserCard';
+import UserForm from '../components/UserForm';
+import Pagination from '../components/Pagination';
 
 function Home({ darkMode, setDarkMode }) {
   const [listOfUser, setListOfUser] = useState([]);
@@ -22,7 +12,8 @@ function Home({ darkMode, setDarkMode }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedUser, setSelectedUser] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const usersPerPage = 6;
+  const [editMode, setEditMode] = useState(false);
+  const [editingUserId, setEditingUserId] = useState(null);
 
   const [showForm, setShowForm] = useState(false);
   const [newUser, setNewUser] = useState({
@@ -33,6 +24,8 @@ function Home({ darkMode, setDarkMode }) {
     company: '',
     website: '',
   });
+
+  const usersPerPage = 6;
 
   useEffect(() => {
     axios.get('https://jsonplaceholder.typicode.com/users')
@@ -58,10 +51,27 @@ function Home({ darkMode, setDarkMode }) {
     setNewUser((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleAddUser = async (e) => {
+  const handleAddOrEditUser = (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.post('https://jsonplaceholder.typicode.com/users', newUser);
+
+    if (editMode) {
+      const updatedList = listOfUser.map((user) =>
+        user.id === editingUserId ? {
+          ...user,
+          name: newUser.name,
+          email: newUser.email,
+          phone: newUser.phone,
+          address: { city: newUser.city },
+          company: { name: newUser.company },
+          website: newUser.website
+        } : user
+      );
+      setListOfUser(updatedList);
+      setFilteredUsers(updatedList);
+      setEditMode(false);
+      setEditingUserId(null);
+      alert('Utilisateur modifié avec succès !');
+    } else {
       const addedUser = {
         id: listOfUser.length + 1,
         name: newUser.name,
@@ -74,12 +84,32 @@ function Home({ darkMode, setDarkMode }) {
       const updatedList = [...listOfUser, addedUser];
       setListOfUser(updatedList);
       setFilteredUsers(updatedList);
-      setShowForm(false);
-      setNewUser({ name: '', email: '', phone: '', city: '', company: '', website: '' });
-      alert('Utilisateur ajouté avec succès (local) !');
-    } catch (error) {
-      console.error('Erreur lors de l\'ajout:', error);
-      alert('Erreur lors de l\'ajout');
+      alert('Utilisateur ajouté avec succès !');
+    }
+
+    setShowForm(false);
+    setNewUser({ name: '', email: '', phone: '', city: '', company: '', website: '' });
+  };
+
+  const handleEditUser = (user) => {
+    setEditMode(true);
+    setEditingUserId(user.id);
+    setNewUser({
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      city: user.address?.city || user.city,
+      company: user.company?.name || user.company,
+      website: user.website,
+    });
+    setShowForm(true);
+  };
+
+  const handleDeleteUser = (id) => {
+    if (window.confirm('Voulez-vous vraiment supprimer cet utilisateur ?')) {
+      const updatedList = listOfUser.filter((user) => user.id !== id);
+      setListOfUser(updatedList);
+      setFilteredUsers(updatedList);
     }
   };
 
@@ -111,66 +141,45 @@ function Home({ darkMode, setDarkMode }) {
           <button className={`btn btn-${darkMode ? 'light' : 'dark'}`} onClick={() => setDarkMode(!darkMode)}>
             {darkMode ? <FaSun /> : <FaMoon />}
           </button>
-          <button className={`btn btn-${darkMode ? 'light' : 'dark'}`} onClick={() => setShowForm(!showForm)}>
+          <button className={`btn btn-${darkMode ? 'light' : 'dark'}`} onClick={() => {
+            setShowForm(!showForm);
+            setEditMode(false);
+            setNewUser({ name: '', email: '', phone: '', city: '', company: '', website: '' });
+          }}>
             {showForm ? 'Annuler' : 'Ajouter un utilisateur'}
           </button>
         </div>
       </div>
 
       {showForm && (
-        <form onSubmit={handleAddUser} className="mb-4">
-          <input type="text" name="name" placeholder="Nom complet" value={newUser.name} onChange={handleInputChange} required className="form-control mb-2" />
-          <input type="email" name="email" placeholder="Email" value={newUser.email} onChange={handleInputChange} required className="form-control mb-2" />
-          <input type="text" name="phone" placeholder="Téléphone" value={newUser.phone} onChange={handleInputChange} className="form-control mb-2" />
-          <input type="text" name="city" placeholder="Ville" value={newUser.city} onChange={handleInputChange} className="form-control mb-2" />
-          <input type="text" name="company" placeholder="Société" value={newUser.company} onChange={handleInputChange} className="form-control mb-2" />
-          <input type="text" name="website" placeholder="Site Web" value={newUser.website} onChange={handleInputChange} className="form-control mb-2" />
-          <button type="submit" className="btn btn-primary">Ajouter</button>
-        </form>
+        <UserForm
+          user={newUser}
+          onChange={handleInputChange}
+          onSubmit={handleAddOrEditUser}
+          isEditing={editMode}
+        />
       )}
 
       <div className="row">
         {currentUsers.map((user) => (
-         <div className="col-md-6 col-lg-4 mb-4" key={user.id}>
-  <div
-    className={`card h-100 shadow user-card ${darkMode ? 'bg-secondary text-white' : ''}`}
-    onClick={() => setSelectedUser(user)}
-    style={{ cursor: 'pointer' }}
-  >
-    <div className="card-body d-flex flex-column align-items-center text-center">
-      <div
-        className="avatar mb-2 pulsing"
-        style={{
-          backgroundColor: getRandomColor(user.name),
-          color: darkMode ? 'black' : 'white',
-        }}
-      >
-        {user.name.charAt(0).toUpperCase()}
-      </div>
-      <h5 className="card-title">{user.name}</h5>
-      <p><strong>Email :</strong> {user.email}</p>
-      <p><strong>Ville :</strong> {user.address?.city || user.city}</p>
-      <p><strong>Téléphone :</strong> {user.phone}</p>
-      <p><strong>Société :</strong> {user.company?.name || user.company}</p>
-      <p><strong>Site Web :</strong> {user.website}</p>
-    </div>
-  </div>
-</div>
-
-
+          <UserCard
+            key={user.id}
+            user={user}
+            darkMode={darkMode}
+            onSelect={setSelectedUser}
+            onEdit={handleEditUser}
+            onDelete={handleDeleteUser}
+          />
         ))}
       </div>
 
       {totalPages > 1 && (
-        <div className="d-flex justify-content-center mt-3">
-          <Button variant={darkMode ? 'outline-light' : 'outline-dark'} className="me-2" onClick={() => changePage('prev')} disabled={currentPage === 1}>
-            Précédent
-          </Button>
-          <span className="align-self-center">Page {currentPage} / {totalPages}</span>
-          <Button variant={darkMode ? 'outline-light' : 'outline-dark'} className="ms-2" onClick={() => changePage('next')} disabled={currentPage === totalPages}>
-            Suivant
-          </Button>
-        </div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={changePage}
+          darkMode={darkMode}
+        />
       )}
 
       <Modal show={selectedUser !== null} onHide={() => setSelectedUser(null)} centered>

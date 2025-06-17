@@ -1,8 +1,10 @@
 // src/UserList.js
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import UserCard from './components/UserCard'; // Vérifie le chemin selon ton projet
+import { Container, Row } from 'react-bootstrap';
 
-const UserList = () => {
+const UserList = ({ darkMode }) => {
   const [listOfUser, setListOfUser] = useState([]);
 
   useEffect(() => {
@@ -17,18 +19,23 @@ const UserList = () => {
   }, []);
 
   return (
-    <div className="container mt-4">
-      <h2 className="text-center">Liste des utilisateurs</h2>
-      <ul className="list-group">
+    <Container className="mt-4">
+      <h2 className={`text-center mb-4 ${darkMode ? 'text-light' : 'text-dark'}`}>
+        Liste des utilisateurs
+      </h2>
+      <Row>
         {listOfUser.map((user) => (
-          <li key={user.id} className="list-group-item">
-            <strong>{user.name}</strong> - {user.email}
-            <br />
-            <small>{user.address.city}, {user.address.street}</small>
-          </li>
+          <UserCard
+            key={user.id}
+            user={user}
+            darkMode={darkMode}
+            onSelect={() => console.log('Utilisateur sélectionné :', user.name)}
+            onEdit={() => alert(`Modifier ${user.name}`)}
+            onDelete={() => alert(`Supprimer ID : ${user.id}`)}
+          />
         ))}
-      </ul>
-    </div>
+      </Row>
+    </Container>
   );
 };
 

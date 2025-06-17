@@ -22,7 +22,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home darkMode={darkMode} setDarkMode={setDarkMode} />} />
             <Route path="/about" element={<About />} />
-            <Route path="/users" element={<UserList />} /> {/* ← Cette ligne utilise UserList */}
+            <Route path="/users" element={<UserList darkMode={darkMode} />} /> {/* ← Cette ligne utilise UserList */}
           </Routes>
         </div>
 

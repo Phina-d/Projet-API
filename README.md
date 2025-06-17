@@ -13,7 +13,8 @@ Une application React permettant d'afficher, rechercher, ajouter et consulter de
 - 🧭 **Navigation** via React Router (`Accueil`, `À propos`)
 - 📱 **Interface responsive** avec Bootstrap
 - 🎨 **Couleur d’avatar aléatoire** basée sur le nom
-
+- 📱 **Design responsive** (mobile / tablette / desktop)
+- 🧹 **Suppression / modification locale** d’un utilisateur (via boutons)
 ## 📦 Technologies utilisées
 
 - [React](https://reactjs.org/)
@@ -35,9 +36,9 @@ Une application React permettant d'afficher, rechercher, ajouter et consulter de
 ├── /src/
 │    ├── /components/         # composants réutilisables
 │    │     ├── Navbar.js      # Barre de navigation
-│    │     ├── Navbar.css
+│    │     ├── UserCard.js # Carte stylisée par utilisateur
 │    │     ├── Footer.js      # Pied de page
-│    │     └── Footer.css
+│    │     └── *.css # Styles spécifiques
 │    │
 │    ├── /pages/              # pages accessibles via le router
 │    │     ├── Home.js        # Page principale avec liste, recherche, formulaire, détails
@@ -60,24 +61,21 @@ Une application React permettant d'afficher, rechercher, ajouter et consulter de
 
 L’utilisateur peut :
 
-Chercher un nom (filtrage en direct)
+Au démarrage, l'application :
+- Charge dynamiquement la liste des utilisateurs depuis l’API JSONPlaceholder.
+- Affiche chaque utilisateur sous forme de **carte stylisée**.
+- Permet la **navigation fluide** entre les pages (`/`, `/about`, `/users`).
+- Autorise l’utilisateur à :
+  - 🔍 **Filtrer** par nom
+  - ➕ **Ajouter** un utilisateur (stocké localement)
+  - 🔄 **Modifier** ou ❌ **Supprimer** un utilisateur (localement)
+  - 🌓 **Basculer le thème clair/sombre**
+  - 👁️ Voir les **détails** dans une modal
+- Chaque **avatar** est généré avec une **couleur unique** en fonction du nom.
 
-Cliquer sur une carte pour voir les détails
-
-Passer du mode clair au sombre
-
-Ajouter un utilisateur (simulé, local)
-
-Naviguer entre pages avec la barre de navigation
-
-Les cartes sont paginées par groupes de 6 utilisateurs.
-
-Chaque avatar est généré avec une couleur unique basée sur le nom de l’utilisateur.
 
 Remarques
 Le formulaire d’ajout d’utilisateur n’envoie pas réellement de données à l’API (car JSONPlaceholder est en lecture seule).
-
-L’utilisateur ajouté est affiché localement dans la liste.
 
 L’application est idéale comme base pédagogique ou pour un portfolio.
 
